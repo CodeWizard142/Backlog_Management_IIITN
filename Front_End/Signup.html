@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" href="./Icons/download.png" type="image/png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up - Academic Backlog Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen relative">
+  
+  <div class="bg-white rounded-xl shadow-md p-8 w-full max-w-md">
+    <div class="flex flex-col items-center mb-6">
+      <img src="./Icons/download.png" alt="Logo" class="h-12 mb-2" />
+      <h1 class="text-center text-2xl font-bold leading-tight">
+        Indian Institute of Information Technology, Nagpur
+      </h1>
+      <h2 class="text-center text-lg font-medium text-gray-700 mt-1">
+        Academic Backlog Management System
+      </h2>      
+    </div>
+
+    <form class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium mb-1">Full Name</label>
+        <input type="text" placeholder="Enter your name" class="w-full border border-gray-300 rounded px-3 py-2" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1">Email ID / Institute Roll No</label>
+        <input type="email" placeholder="example@iiitn.ac.in" class="w-full border border-gray-300 rounded px-3 py-2" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1">Password</label>
+        <input type="password" placeholder="Create password" class="w-full border border-gray-300 rounded px-3 py-2" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1">Confirm Password</label>
+        <input type="password" placeholder="Re-enter password" class="w-full border border-gray-300 rounded px-3 py-2" />
+      </div>
+
+      <button type="submit" class="w-full bg-[#1d4ed8] text-white py-2 rounded hover:bg-green-700">
+        SIGN UP
+      </button>
+
+      <p class="text-center text-sm mt-3">
+        Already have an account?
+        <a href="login.html" class="text-blue-600 hover:underline">Login here</a>
+      </p>
+    </form>
+  </div>
+
+  <footer class="absolute bottom-2 text-center text-xs text-gray-600">
+    © Academic Backlog Tracking and Resolution Portal created by the batch of AIML'27
+  </footer>
+</body>
+</html>
