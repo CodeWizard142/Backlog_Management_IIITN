@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect
+from flask import render_template, request, redirect, url_for, flash,Flask
 from flask_mysqldb import MySQL
 from werkzeug.security import generate_password_hash, check_password_hash
 import MySQLdb.cursors
@@ -29,22 +29,26 @@ def handle_signup():
         password = request.form['password']
         confirm_password = request.form['confirm_password']
 
+        # Password mismatch check
         if password != confirm_password:
-            return "<script>alert('Passwords do not match!'); window.location.href='/signup';</script>"
+            return render_template('signup.html', error="Passwords do not match!")
+
+        # Optional: More validation can be added here
 
         hashed_password = generate_password_hash(password)
 
         try:
             cursor = mysql.connection.cursor()
-            cursor.execute("INSERT INTO students (name, email, semester, department, password_hash) VALUES (%s, %s, %s, %s, %s)",
-                           (name, email, semester, department, hashed_password))
+            cursor.execute(
+                "INSERT INTO students (name, email, semester, department, password_hash) VALUES (%s, %s, %s, %s, %s)",
+                (name, email, semester, department, hashed_password)
+            )
             mysql.connection.commit()
             cursor.close()
-            return "<script>alert('Signup successful! Please login.'); window.location.href='/login';</script>"
+            return redirect(url_for('login'))  # Use redirect after success
         except MySQLdb.IntegrityError:
-            return "<script>alert('Email already exists. Please use a different one.'); window.location.href='/signup';</script>"
+            return render_template('signup.html', error="Email already exists. Please use a different one.")
 
-    # If GET request, render the signup page
     return render_template('signup.html')
 # 👇 Login page + logic
 @app.route('/login', methods=['GET', 'POST'])
