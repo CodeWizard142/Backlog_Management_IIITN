@@ -3,3 +3,5 @@ A web-based Academic Backlog Management System to help institutes manage student
 
 ## Relational Schema Diagram
 https://drawsql.app/teams/xyz-267/diagrams/backlog-management
+
+### Preview 
