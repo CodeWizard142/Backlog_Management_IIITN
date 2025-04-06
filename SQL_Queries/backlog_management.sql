@@ -1,31 +1,37 @@
+-- Students Table
 CREATE TABLE students (
   student_id INT PRIMARY KEY AUTO_INCREMENT,
-  name VARCHAR(100),
-  email VARCHAR(100) UNIQUE,
-  semester INT,
-  department VARCHAR(100),
-  password_hash VARCHAR(255)
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) UNIQUE NOT NULL,
+  semester INT NOT NULL,
+  department VARCHAR(100) NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Admins Table
 CREATE TABLE admins (
   admin_id INT PRIMARY KEY AUTO_INCREMENT,
-  name VARCHAR(100),
-  email VARCHAR(100) UNIQUE,
-  password_hash VARCHAR(255),
-  role ENUM('superadmin', 'exam_controller', 'faculty') DEFAULT 'faculty'
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) UNIQUE NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  role ENUM('superadmin', 'exam_controller', 'faculty') DEFAULT 'faculty',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Subjects Table
 CREATE TABLE subjects (
   subject_id INT PRIMARY KEY AUTO_INCREMENT,
-  subject_name VARCHAR(100),
-  semester INT,
-  department VARCHAR(100)
+  subject_name VARCHAR(100) NOT NULL,
+  semester INT NOT NULL,
+  department VARCHAR(100) NOT NULL
 );
 
+-- Backlogs Table
 CREATE TABLE backlogs (
   backlog_id INT PRIMARY KEY AUTO_INCREMENT,
-  student_id INT,
-  subject_id INT,
+  student_id INT NOT NULL,
+  subject_id INT NOT NULL,
   status ENUM('pending', 'cleared') DEFAULT 'pending',
   attempts INT DEFAULT 0,
   grade VARCHAR(5),
@@ -33,20 +39,22 @@ CREATE TABLE backlogs (
   FOREIGN KEY (subject_id) REFERENCES subjects(subject_id)
 );
 
-CREATE TABLE exam_schedule (
-  exam_id INT PRIMARY KEY AUTO_INCREMENT,
-  subject_id INT,
-  exam_date DATE,
-  venue VARCHAR(100),
-  semester INT,
-  FOREIGN KEY (subject_id) REFERENCES subjects(subject_id)
-);
+-- Exam Schedule Table
+  CREATE TABLE exam_schedule (
+    exam_id INT PRIMARY KEY AUTO_INCREMENT,
+    subject_id INT NOT NULL,
+    exam_date DATE NOT NULL,
+    venue VARCHAR(100) NOT NULL,
+    semester INT NOT NULL,
+    FOREIGN KEY (subject_id) REFERENCES subjects(subject_id)
+  );
 
+-- Re-Exam Requests Table
 CREATE TABLE re_exam_requests (
   request_id INT PRIMARY KEY AUTO_INCREMENT,
-  student_id INT,
-  subject_id INT,
-  request_date DATE,
+  student_id INT NOT NULL,
+  subject_id INT NOT NULL,
+  request_date DATE DEFAULT CURRENT_DATE,
   status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
   FOREIGN KEY (student_id) REFERENCES students(student_id),
   FOREIGN KEY (subject_id) REFERENCES subjects(subject_id)

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" href="../Assests/Icons/download.png" type="image/png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up - Academic Backlog Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen relative">
+
+  <div class="bg-white rounded-xl shadow-md p-8 w-full max-w-2xl">
+    <div class="flex flex-col items-center mb-6">
+      <img src="../Assests/Icons/download.png" alt="Logo" class="h-12 mb-2" />
+      <h1 class="text-center text-2xl font-bold leading-tight">
+        Indian Institute of Information Technology, Nagpur
+      </h1>
+      <h2 class="text-center text-lg font-medium text-gray-700 mt-1">
+        Academic Backlog Management System
+      </h2>      
+    </div>
+
+    <form class="grid grid-cols-1 md:grid-cols-2 gap-4" method="POST" action="/signup">
+      <div>
+        <label class="block text-sm font-medium mb-1">Full Name</label>
+        <input type="text" name="name" required placeholder="Enter your name" class="w-full border border-gray-300 rounded px-3 py-2" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1">Email ID / Institute Roll No</label>
+        <input type="email" name="email" required placeholder="example@iiitn.ac.in" class="w-full border border-gray-300 rounded px-3 py-2" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1">Semester</label>
+        <input type="number" name="semester" required min="1" max="8" placeholder="Enter semester" class="w-full border border-gray-300 rounded px-3 py-2" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1">Department</label>
+        <input type="text" name="department" required placeholder="AIML / CSE / ECE" class="w-full border border-gray-300 rounded px-3 py-2" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1">Password</label>
+        <input type="password" name="password" required placeholder="Create password" class="w-full border border-gray-300 rounded px-3 py-2" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1">Confirm Password</label>
+        <input type="password" name="confirm_password" required placeholder="Re-enter password" class="w-full border border-gray-300 rounded px-3 py-2" />
+      </div>
+
+      <!-- Signup button spanning both columns -->
+      <div class="col-span-1 md:col-span-2">
+        <button type="submit" class="w-full bg-[#1d4ed8] text-white py-2 rounded hover:bg-green-700">
+          SIGN UP
+        </button>
+      </div>
+
+      <div class="col-span-1 md:col-span-2 text-center text-sm mt-2">
+        Already have an account?
+        <a href="{{ url_for('Signup')}}" class="text-blue-600 hover:underline">Login here</a>
+      </div>
+    </form>
+  </div>
+
+  <footer class="absolute bottom-2 text-center text-xs text-gray-600">
+    © Academic Backlog Tracking and Resolution Portal created by the batch of AIML'27
+  </footer>
+  <script>
+    document.querySelector("form").addEventListener("submit", function (e) {
+      const password = document.querySelector("input[name='password']").value;
+      const confirm = document.querySelector("input[name='confirm_password']").value;
+  
+      if (password !== confirm) {
+        e.preventDefault();
+        alert("Passwords do not match!");
+      }
+    });
+  </script>  
+</body>
+</html>

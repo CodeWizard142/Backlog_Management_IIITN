@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" href="./Assests/Icons/download.png" type="image/png">
+  <link rel="icon" href="{{ url_for('static', filename='Assests/Icons/download.png') }}" type="image/png">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Academic Backlog Tracking and Resolution Portal</title>
@@ -11,17 +11,17 @@
   
   <div class="bg-white rounded-xl shadow-md p-8 w-full max-w-md">
     <div class="flex flex-col items-center mb-6">
-      <img src="./Assests/Icons/download.png" alt="Logo" class="h-12 mb-2" />
+      <img src="{{ url_for('static', filename='Assests/Icons/download.png') }}" alt="Logo" class="h-12 mb-2" />
       <h1 class="text-center text-xl font-semibold leading-tight">
         Indian Institute Of Information Technology
         Nagpur
       </h1>
     </div>
 
-    <form class="space-y-5">
+    <form id="loginForm" class="space-y-5">
       <div>
         <label class="block text-sm font-medium mb-1">Username</label>
-        <input type="text" placeholder="Username" class="w-full border border-gray-300 rounded px-3 py-2" />
+        <input type="text" name="email" placeholder="Username" class="w-full border border-gray-300 rounded px-3 py-2" />
       </div>
 
       <div>
@@ -29,7 +29,7 @@
           <label class="block text-sm font-medium mb-1">Password </label>
           <a href="#" class="text-xs text-blue-600 hover:underline">Forgot Password?</a>
         </div>
-        <input type="password" placeholder="Password" class="w-full border border-gray-300 rounded px-3 py-2" />
+        <input name="password" type="password" placeholder="Password" class="w-full border border-gray-300 rounded px-3 py-2" />
       </div>
 
       <div class="flex items-center space-x-2">
@@ -48,5 +48,31 @@
   <footer class="absolute bottom-2 text-center text-xs text-gray-600">
     © Academic Backlog Tracking and Resolution Portal created by the batch of AIML'27
   </footer>
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", async function(e) {
+      e.preventDefault(); // Prevent default form submission
+  
+      const formData = new FormData(this);
+      const email = formData.get("email");
+      const password = formData.get("password");
+  
+      const response = await fetch("/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, password })
+      });
+  
+      const result = await response.json();
+  
+      if (response.ok) {
+        alert("Login successful! Redirecting...");
+        window.location.href = "/dashboard"; // Replace with your actual dashboard page
+      } else {
+        alert(result.message); // Show error message
+      }
+    });
+  </script>  
 </body>
 </html>
