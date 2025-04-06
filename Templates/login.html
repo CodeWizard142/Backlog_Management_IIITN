@@ -18,7 +18,7 @@
       </h1>
     </div>
 
-    <form id="loginForm" class="space-y-5">
+    <form id="loginForm" class="space-y-5" method="POST" action="{{ url_for('login') }}">
       <div>
         <label class="block text-sm font-medium mb-1">Username</label>
         <input type="text" name="email" placeholder="Username" class="w-full border border-gray-300 rounded px-3 py-2" />
@@ -40,7 +40,7 @@
       <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">LOGIN</button>
 
       <p class="text-center text-sm mt-2">
-        <a href="./Signup.html" class="text-gray-600 hover:underline">First Time Login ?</a>
+        <a href="{{ url_for('handle_signup') }}" class="text-gray-600 hover:underline">First Time Login ?</a>
       </p>
     </form>
   </div>
@@ -48,31 +48,5 @@
   <footer class="absolute bottom-2 text-center text-xs text-gray-600">
     © Academic Backlog Tracking and Resolution Portal created by the batch of AIML'27
   </footer>
-  <script>
-    document.getElementById("loginForm").addEventListener("submit", async function(e) {
-      e.preventDefault(); // Prevent default form submission
-  
-      const formData = new FormData(this);
-      const email = formData.get("email");
-      const password = formData.get("password");
-  
-      const response = await fetch("/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email, password })
-      });
-  
-      const result = await response.json();
-  
-      if (response.ok) {
-        alert("Login successful! Redirecting...");
-        window.location.href = "/dashboard"; // Replace with your actual dashboard page
-      } else {
-        alert(result.message); // Show error message
-      }
-    });
-  </script>  
 </body>
 </html>
