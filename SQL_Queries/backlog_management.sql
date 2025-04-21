@@ -1,3 +1,5 @@
+CREATE database backlog_db;
+use backlog_db;
 -- Students Table
 CREATE TABLE students (
   student_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -54,7 +56,7 @@ CREATE TABLE re_exam_requests (
   request_id INT PRIMARY KEY AUTO_INCREMENT,
   student_id INT NOT NULL,
   subject_id INT NOT NULL,
-  request_date DATE DEFAULT CURRENT_DATE,
+  request_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
   FOREIGN KEY (student_id) REFERENCES students(student_id),
   FOREIGN KEY (subject_id) REFERENCES subjects(subject_id)

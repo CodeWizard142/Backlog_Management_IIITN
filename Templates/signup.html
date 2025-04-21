@@ -11,9 +11,7 @@
     <title>Sign Up - Academic Backlog Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body
-    class="bg-gray-100 flex items-center justify-center min-h-screen relative"
-  >
+  <body class="bg-gray-100 flex items-center justify-center min-h-screen relative">
     <div class="bg-white rounded-xl shadow-md p-8 w-full max-w-2xl">
       <div class="flex flex-col items-center mb-6">
         <img
@@ -29,11 +27,10 @@
         </h2>
       </div>
 
-      <form
-        class="grid grid-cols-1 md:grid-cols-2 gap-4"
-        method="POST"
-        action="/signup"
-      >
+      <form class="grid grid-cols-1 md:grid-cols-2 gap-4" method="POST" action="/signup">
+        <!-- Student ID (Hidden) -->
+        <input type="hidden" id="student_id" name="student_id">
+
         <div>
           <label class="block text-sm font-medium mb-1">Full Name</label>
           <input
@@ -46,9 +43,7 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium mb-1"
-            >Institute Email Id</label
-          >
+          <label class="block text-sm font-medium mb-1">Institute Email Id</label>
           <input
             type="email"
             name="email"
@@ -105,7 +100,9 @@
             class="w-full border border-gray-300 rounded px-3 py-2"
           />
         </div>
-        <div id="form-error" class="col-span-1 md:col-span-2 text-center text-sm text-red-600 font-medium hidden">   {{ error }}</div>
+
+        <div id="form-error" class="col-span-1 md:col-span-2 text-center text-sm text-red-600 font-medium hidden">{{ error }}</div>
+
         <!-- Signup button spanning both columns -->
         <div class="col-span-1 md:col-span-2">
           <button
@@ -118,29 +115,30 @@
 
         <div class="col-span-1 md:col-span-2 text-center text-sm mt-2">
           Already have an account?
-          <a href="{{ url_for('login')}}" class="text-blue-600 hover:underline"
-            >Login here</a
-          >
+          <a href="{{ url_for('login') }}" class="text-blue-600 hover:underline">Login here</a>
         </div>
       </form>
     </div>
 
     <footer class="absolute bottom-2 text-center text-xs text-gray-600">
-      © Academic Backlog Tracking and Resolution Portal created by the batch of
-      AIML'27
+      © Academic Backlog Tracking and Resolution Portal created by the batch of AIML'27
     </footer>
+
     <script>
       const validBranches = ['CSE', 'CSA', 'CSD', 'CSH', 'ECE', 'ECI'];
-    
       const emailInput = document.getElementById("email");
       const deptInput = document.getElementById("department");
+      const studentIdInput = document.getElementById("student_id");
       const errorDiv = document.getElementById("form-error");
-    
+
       emailInput.addEventListener("input", function () {
         const email = this.value.toLowerCase();
         const match = email.match(/^bt\d{2}([a-z]{3})\d{3}@iiitn\.ac\.in$/);
-    
+
         if (match) {
+          const studentId = email.split('@')[0];  // Extract the student ID part from the email
+          studentIdInput.value = studentId;  // Set the student_id input field with the extracted student ID
+          
           const branch = match[1].toUpperCase();
           if (validBranches.includes(branch)) {
             deptInput.value = branch;
@@ -160,11 +158,11 @@
           errorDiv.classList.add("hidden");
         }
       });
-    
+
       document.querySelector("form").addEventListener("submit", function (e) {
         const password = document.querySelector("input[name='password']").value;
         const confirm = document.querySelector("input[name='confirm_password']").value;
-    
+
         if (password !== confirm) {
           e.preventDefault();
           errorDiv.textContent = "Passwords do not match!";
@@ -174,6 +172,6 @@
           errorDiv.classList.add("hidden");
         }
       });
-    </script>   
+    </script>
   </body>
 </html>

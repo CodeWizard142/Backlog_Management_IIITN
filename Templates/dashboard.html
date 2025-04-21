@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="{{ url_for('static', filename='Assests/Icons/download.png') }}" type="image/png">
+    <meta charset="UTF-8">
+    <title>Student Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f4f6f9;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .sidebar {
+            min-height: 100vh;
+            background-color: #ffffff;
+            border-right: 1px solid #dee2e6;
+            padding-top: 2rem;
+        }
+
+        .sidebar a {
+            padding: 12px 20px;
+            display: block;
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background-color: #e2ecff;
+            color: #1e4da1;
+        }
+
+        .sidebar .active {
+            background-color: #1e4da1;
+            color: white;
+        }
+
+        .header {
+            background-color: #1e4da1;
+            color: white;
+            padding: 16px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #163b7a;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .student-details {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .student-details h5 {
+            color: #1e4da1;
+        }
+
+        .student-details p {
+            font-size: 16px;
+            color: #555;
+        }
+
+        .logout-link {
+            color: #dc3545;
+        }
+
+        .logo-text {
+            font-size: 22px;
+            font-weight: 600;
+            color: #1e4da1;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-text img {
+            width: 50px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+        .card-custom {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+            transition: transform 0.2s ease;
+        }
+
+        .card-custom:hover {
+            transform: translateY(-4px);
+        }
+    </style>
+</head>
+<body>
+
+<div class="d-flex">
+    <!-- Sidebar -->
+    <nav class="sidebar col-md-3 col-lg-2 d-md-block bg-light">
+        <div class="logo-text">
+            <img src="../static/Assests/Icons/download.png" alt="Logo">
+        </div>
+        <a href="#" class="active">Dashboard</a>
+        <a href="#">My Courses</a>
+        <a href="#" id="myBacklogs" class="sidebar-link">My Backlogs</a>
+        <a href="#" id="reportIssue">Report Issue</a>
+        <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="flex-grow-1">
+        <!-- Header -->
+        <div class="header">
+            <h5 class="mb-0">Student Dashboard</h5>
+            <div>Welcome, <strong>{{ student_details['name'] }}</strong></div>
+        </div>
+
+        <!-- Student Details Section -->
+        <div class="student-details">
+            <h5>Student Details</h5>
+            <p><strong>Name:</strong> {{ student_details['name'] }}</p>
+            <p><strong>Email:</strong> {{ student_details['email'] }}</p>
+            <p><strong>Student ID:</strong> {{ student_details['student_id'] }}</p>
+        </div>
+
+        <!-- Backlogs Content -->
+        <div id="backlogs-content" class="main-content" style="display: none;">
+            <h3>My Backlogs</h3>
+            <div id="backlogs-list">
+                <!-- Backlogs will be displayed here -->
+            </div>
+        </div>
+
+        <!-- Report Issue Content -->
+        <div id="report-issue-content" class="main-content" style="display: none;">
+            <h3>Report an Issue</h3>
+            <p>Kindly mail the details to <a href="mailto:admin@iiitn.ac.in" class="text-primary">admin@iiitn.ac.in</a></p>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript to handle content switching -->
+<script>
+document.getElementById('myBacklogs').addEventListener('click', function () {
+    document.getElementById('backlogs-content').style.display = 'block';
+    document.getElementById('report-issue-content').style.display = 'none';
+
+    const enrollmentId = '12345'; // Replace with dynamic ID from backend if needed
+    fetch(`/my-backlogs?enrollment_id=${enrollmentId}`)
+        .then(response => response.json())
+        .then(data => {
+            const backlogList = document.getElementById('backlogs-list');
+            backlogList.innerHTML = '';
+
+            if (data.length > 0) {
+                data.forEach(backlog => {
+                    const backlogItem = document.createElement('div');
+                    backlogItem.classList.add('backlog-item');
+                    backlogItem.innerHTML = `
+                        <p>Course: ${backlog.course_name}</p>
+                        <p>Status: ${backlog.status}</p>
+                    `;
+                    backlogList.appendChild(backlogItem);
+                });
+            } else {
+                backlogList.innerHTML = '<p>No backlogs found.</p>';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching backlogs:', error);
+            alert('An error occurred while fetching backlogs.');
+        });
+});
+
+document.getElementById('reportIssue').addEventListener('click', function () {
+    document.getElementById('report-issue-content').style.display = 'block';
+    document.getElementById('backlogs-content').style.display = 'none';
+});
+</script>
+
+</body>
+</html>
