@@ -11,6 +11,7 @@
     <title>Sign Up - Academic Backlog Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
+
   <body class="bg-gray-100 flex items-center justify-center min-h-screen relative">
     <div class="bg-white rounded-xl shadow-md p-8 w-full max-w-2xl">
       <div class="flex flex-col items-center mb-6">
@@ -27,9 +28,9 @@
         </h2>
       </div>
 
-      <form class="grid grid-cols-1 md:grid-cols-2 gap-4" method="POST" action="/signup">
-        <!-- Student ID (Hidden) -->
-        <input type="hidden" id="student_id" name="student_id">
+      <form class="grid grid-cols-1 md:grid-cols-2 gap-4" method="POST" action="{{ url_for('handle_signup') }}">
+        <input type="hidden" name="student_id" id="student_id" />
+        <input type="hidden" name="department" id="department" />
 
         <div>
           <label class="block text-sm font-medium mb-1">Full Name</label>
@@ -71,10 +72,9 @@
           <label class="block text-sm font-medium mb-1">Department</label>
           <input
             type="text"
-            name="department"
-            id="department"
+            id="department_display"
             readonly
-            placeholder="AIML / CSE / ECE"
+            placeholder="CSE / CSA / CSD / CSH / ECE / ECI"
             class="w-full border border-gray-300 rounded px-3 py-2"
           />
         </div>
@@ -86,6 +86,7 @@
             name="password"
             required
             placeholder="Create password"
+            autocomplete="new-password"
             class="w-full border border-gray-300 rounded px-3 py-2"
           />
         </div>
@@ -97,23 +98,23 @@
             name="confirm_password"
             required
             placeholder="Re-enter password"
+            autocomplete="new-password"
             class="w-full border border-gray-300 rounded px-3 py-2"
           />
         </div>
 
-        <div id="form-error" class="col-span-1 md:col-span-2 text-center text-sm text-red-600 font-medium hidden">{{ error }}</div>
+        <div id="form-error" class="col-span-2 text-center text-sm text-red-600 font-medium hidden"></div>
 
-        <!-- Signup button spanning both columns -->
-        <div class="col-span-1 md:col-span-2">
+        <div class="col-span-2">
           <button
             type="submit"
-            class="w-full bg-[#1d4ed8] text-white py-2 rounded hover:bg-green-700"
+            class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
           >
             SIGN UP
           </button>
         </div>
 
-        <div class="col-span-1 md:col-span-2 text-center text-sm mt-2">
+        <div class="col-span-2 text-center text-sm mt-2">
           Already have an account?
           <a href="{{ url_for('login') }}" class="text-blue-600 hover:underline">Login here</a>
         </div>
@@ -128,6 +129,7 @@
       const validBranches = ['CSE', 'CSA', 'CSD', 'CSH', 'ECE', 'ECI'];
       const emailInput = document.getElementById("email");
       const deptInput = document.getElementById("department");
+      const deptDisplay = document.getElementById("department_display");
       const studentIdInput = document.getElementById("student_id");
       const errorDiv = document.getElementById("form-error");
 
@@ -136,24 +138,27 @@
         const match = email.match(/^bt\d{2}([a-z]{3})\d{3}@iiitn\.ac\.in$/);
 
         if (match) {
-          const studentId = email.split('@')[0];  // Extract the student ID part from the email
-          studentIdInput.value = studentId;  // Set the student_id input field with the extracted student ID
-          
+          const studentId = email.split('@')[0];
+          studentIdInput.value = studentId;
+
           const branch = match[1].toUpperCase();
           if (validBranches.includes(branch)) {
+            deptDisplay.value = branch;
             deptInput.value = branch;
-            deptInput.classList.remove("border-red-500");
+            deptDisplay.classList.remove("border-red-500");
             errorDiv.textContent = "";
             errorDiv.classList.add("hidden");
           } else {
-            deptInput.value = "INVALID";
-            deptInput.classList.add("border-red-500");
+            deptDisplay.value = "INVALID";
+            deptInput.value = "";
+            deptDisplay.classList.add("border-red-500");
             errorDiv.textContent = "Invalid branch in email. Please check again.";
             errorDiv.classList.remove("hidden");
           }
         } else {
+          deptDisplay.value = "";
           deptInput.value = "";
-          deptInput.classList.remove("border-red-500");
+          deptDisplay.classList.remove("border-red-500");
           errorDiv.textContent = "";
           errorDiv.classList.add("hidden");
         }
@@ -167,9 +172,6 @@
           e.preventDefault();
           errorDiv.textContent = "Passwords do not match!";
           errorDiv.classList.remove("hidden");
-        } else {
-          errorDiv.textContent = "";
-          errorDiv.classList.add("hidden");
         }
       });
     </script>

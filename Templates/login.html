@@ -8,28 +8,34 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen relative">
-  
+
   <div class="bg-white rounded-xl shadow-md p-8 w-full max-w-md">
     <div class="flex flex-col items-center mb-6">
       <img src="{{ url_for('static', filename='Assests/Icons/download.png') }}" alt="Logo" class="h-12 mb-2" />
       <h1 class="text-center text-xl font-semibold leading-tight">
-        Indian Institute Of Information Technology
+        Indian Institute Of Information Technology<br />
         Nagpur
       </h1>
     </div>
 
+    {% if error %}
+      <p class="text-red-600 text-sm text-center mb-4">{{ error }}</p>
+    {% endif %}
+
     <form id="loginForm" class="space-y-5" method="POST" action="{{ url_for('login') }}">
       <div>
-        <label class="block text-sm font-medium mb-1">Username</label>
-        <input type="text" name="email" placeholder="Username" class="w-full border border-gray-300 rounded px-3 py-2" />
+        <label for="email" class="block text-sm font-medium mb-1">Email</label>
+        <input id="email" type="email" name="email" placeholder="Enter your IIITN email"
+               class="w-full border border-gray-300 rounded px-3 py-2" required />
       </div>
 
       <div>
         <div class="flex justify-between items-center">
-          <label class="block text-sm font-medium mb-1">Password </label>
+          <label for="password" class="block text-sm font-medium mb-1">Password</label>
           <a href="#" class="text-xs text-blue-600 hover:underline">Forgot Password?</a>
         </div>
-        <input name="password" type="password" placeholder="Password" class="w-full border border-gray-300 rounded px-3 py-2" />
+        <input id="password" name="password" type="password" placeholder="Password"
+               class="w-full border border-gray-300 rounded px-3 py-2" required />
       </div>
 
       <div class="flex items-center space-x-2">
@@ -37,10 +43,13 @@
         <label for="remember" class="text-sm">Remember Me</label>
       </div>
 
-      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">LOGIN</button>
+      <button type="submit"
+              class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+        LOGIN
+      </button>
 
       <p class="text-center text-sm mt-2">
-        <a href="{{ url_for('handle_signup') }}" class="text-gray-600 hover:underline">First Time Login ?</a>
+        <a href="{{ url_for('handle_signup') }}" class="text-gray-600 hover:underline">First Time Login?</a>
       </p>
     </form>
   </div>
