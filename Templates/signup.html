@@ -10,6 +10,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sign Up - Academic Backlog Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .flash-message {
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 4px;
+        text-align: center;
+      }
+      .flash-error {
+        background-color: #fee2e2;
+        color: #b91c1c;
+        border: 1px solid #f87171;
+      }
+      .flash-success {
+        background-color: #d1fae5;
+        color: #065f46;
+        border: 1px solid #6ee7b7;
+      }
+    </style>
   </head>
 
   <body class="bg-gray-100 flex items-center justify-center min-h-screen relative">
@@ -28,7 +46,16 @@
         </h2>
       </div>
 
-      <form class="grid grid-cols-1 md:grid-cols-2 gap-4" method="POST" action="{{ url_for('handle_signup') }}">
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="flash-message flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form class="grid grid-cols-1 md:grid-cols-2 gap-4" method="POST" action="{{ url_for('handle_signup') }}" id="signupForm">
         <input type="hidden" name="student_id" id="student_id" />
         <input type="hidden" name="department" id="department" />
 
@@ -84,6 +111,7 @@
           <input
             type="password"
             name="password"
+            id="password"
             required
             placeholder="Create password"
             autocomplete="new-password"
@@ -96,6 +124,7 @@
           <input
             type="password"
             name="confirm_password"
+            id="confirm_password"
             required
             placeholder="Re-enter password"
             autocomplete="new-password"
@@ -109,6 +138,7 @@
           <button
             type="submit"
             class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+            id="submitButton"
           >
             SIGN UP
           </button>
@@ -132,7 +162,11 @@
       const deptDisplay = document.getElementById("department_display");
       const studentIdInput = document.getElementById("student_id");
       const errorDiv = document.getElementById("form-error");
+      const passwordInput = document.getElementById("password");
+      const confirmInput = document.getElementById("confirm_password");
+      const form = document.getElementById("signupForm");
 
+      // Enhanced email validation
       emailInput.addEventListener("input", function () {
         const email = this.value.toLowerCase();
         const match = email.match(/^bt\d{2}([a-z]{3})\d{3}@iiitn\.ac\.in$/);
@@ -140,11 +174,13 @@
         if (match) {
           const studentId = email.split('@')[0];
           studentIdInput.value = studentId;
+          console.log("Student ID set to:", studentId);
 
           const branch = match[1].toUpperCase();
           if (validBranches.includes(branch)) {
             deptDisplay.value = branch;
             deptInput.value = branch;
+            console.log("Department set to:", branch);
             deptDisplay.classList.remove("border-red-500");
             errorDiv.textContent = "";
             errorDiv.classList.add("hidden");
@@ -164,14 +200,40 @@
         }
       });
 
-      document.querySelector("form").addEventListener("submit", function (e) {
-        const password = document.querySelector("input[name='password']").value;
-        const confirm = document.querySelector("input[name='confirm_password']").value;
-
-        if (password !== confirm) {
-          e.preventDefault();
+      // Enhanced form validation
+      form.addEventListener("submit", function (e) {
+        // Reset error message
+        errorDiv.textContent = "";
+        errorDiv.classList.add("hidden");
+        
+        let hasError = false;
+        
+        // Check if department was parsed correctly
+        if (!deptInput.value) {
+          errorDiv.textContent = "Please enter a valid institute email address with correct department code.";
+          errorDiv.classList.remove("hidden");
+          hasError = true;
+        }
+        
+        // Check if passwords match
+        if (passwordInput.value !== confirmInput.value) {
           errorDiv.textContent = "Passwords do not match!";
           errorDiv.classList.remove("hidden");
+          hasError = true;
+        }
+        
+        // Log form data before submission (for debugging)
+        if (!hasError) {
+          console.log("Form data being submitted:");
+          console.log("Name:", form.elements["name"].value);
+          console.log("Email:", form.elements["email"].value);
+          console.log("Student ID:", form.elements["student_id"].value);
+          console.log("Semester:", form.elements["semester"].value);
+          console.log("Department:", form.elements["department"].value);
+        }
+        
+        if (hasError) {
+          e.preventDefault();
         }
       });
     </script>

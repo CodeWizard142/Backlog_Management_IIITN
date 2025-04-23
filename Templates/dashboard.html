@@ -101,6 +101,14 @@
         .card-custom:hover {
             transform: translateY(-4px);
         }
+
+        .backlog-item, .course-item {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -112,8 +120,8 @@
             <img src="../static/Assests/Icons/download.png" alt="Logo">
         </div>
         <a href="#" class="active">Dashboard</a>
-        <a href="#">My Courses</a>
-        <a href="#" id="myBacklogs" class="sidebar-link">My Backlogs</a>
+        <a href="#" id="myCourses">My Courses</a>
+        <a href="#" id="myBacklogs">My Backlogs</a>
         <a href="#" id="reportIssue">Report Issue</a>
         <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
     </nav>
@@ -132,17 +140,26 @@
             <p><strong>Name:</strong> {{ student_details['name'] }}</p>
             <p><strong>Email:</strong> {{ student_details['email'] }}</p>
             <p><strong>Student ID:</strong> {{ student_details['student_id'] }}</p>
+            <p><strong>Semester:</strong> {{ student_details['semester'] }}</p>
         </div>
 
-        <!-- Backlogs Content -->
+        <!-- My Backlogs Section -->
         <div id="backlogs-content" class="main-content" style="display: none;">
             <h3>My Backlogs</h3>
             <div id="backlogs-list">
-                <!-- Backlogs will be displayed here -->
+                <!-- Backlogs will appear here -->
             </div>
         </div>
 
-        <!-- Report Issue Content -->
+        <!-- My Courses Section -->
+        <div id="my-courses-content" class="main-content" style="display: none;">
+            <h3>My Courses</h3>
+            <div id="courses-list">
+                <!-- Courses will appear here -->
+            </div>
+        </div>
+
+        <!-- Report Issue Section -->
         <div id="report-issue-content" class="main-content" style="display: none;">
             <h3>Report an Issue</h3>
             <p>Kindly mail the details to <a href="mailto:admin@iiitn.ac.in" class="text-primary">admin@iiitn.ac.in</a></p>
@@ -150,28 +167,27 @@
     </div>
 </div>
 
-<!-- JavaScript to handle content switching -->
+<!-- JS: Handle sidebar actions -->
 <script>
 document.getElementById('myBacklogs').addEventListener('click', function () {
     document.getElementById('backlogs-content').style.display = 'block';
     document.getElementById('report-issue-content').style.display = 'none';
+    document.getElementById('my-courses-content').style.display = 'none';
 
-    const enrollmentId = '12345'; // Replace with dynamic ID from backend if needed
-    fetch(`/my-backlogs?enrollment_id=${enrollmentId}`)
+    fetch('/my-backlogs')
         .then(response => response.json())
         .then(data => {
             const backlogList = document.getElementById('backlogs-list');
             backlogList.innerHTML = '';
-
-            if (data.length > 0) {
+            if (data && data.length > 0) {
                 data.forEach(backlog => {
-                    const backlogItem = document.createElement('div');
-                    backlogItem.classList.add('backlog-item');
-                    backlogItem.innerHTML = `
-                        <p>Course: ${backlog.course_name}</p>
-                        <p>Status: ${backlog.status}</p>
+                    const item = document.createElement('div');
+                    item.classList.add('backlog-item');
+                    item.innerHTML = `
+                        <p><strong>Course:</strong> ${backlog.course_name}</p>
+                        <p><strong>Status:</strong> ${backlog.status}</p>
                     `;
-                    backlogList.appendChild(backlogItem);
+                    backlogList.appendChild(item);
                 });
             } else {
                 backlogList.innerHTML = '<p>No backlogs found.</p>';
@@ -186,6 +202,43 @@ document.getElementById('myBacklogs').addEventListener('click', function () {
 document.getElementById('reportIssue').addEventListener('click', function () {
     document.getElementById('report-issue-content').style.display = 'block';
     document.getElementById('backlogs-content').style.display = 'none';
+    document.getElementById('my-courses-content').style.display = 'none';
+});
+
+document.getElementById('myCourses').addEventListener('click', function () {
+    document.getElementById('my-courses-content').style.display = 'block';
+    document.getElementById('report-issue-content').style.display = 'none';
+    document.getElementById('backlogs-content').style.display = 'none';
+
+    fetch('/my-courses')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const courseList = document.getElementById('courses-list');
+            courseList.innerHTML = '';
+            
+            console.log('API Response:', data); // Debug log
+            
+            if (data.courses && data.courses.length > 0) {
+                data.courses.forEach(course => {
+                    const item = document.createElement('div');
+                    item.classList.add('course-item');
+                    item.innerHTML = `<p><strong>Course ID:</strong> ${course.id} - <strong>Course Name:</strong> ${course.name}</p>`;
+                    courseList.appendChild(item);
+                });
+            } else {
+                courseList.innerHTML = '<p>No courses found for your semester.</p>';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching courses:', error);
+            document.getElementById('courses-list').innerHTML = 
+                `<p>An error occurred while fetching courses: ${error.message}</p>`;
+        });
 });
 </script>
 

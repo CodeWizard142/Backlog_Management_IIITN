@@ -9,6 +9,13 @@
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen relative">
 
+  <!-- Admin login button in the top right corner -->
+  <div class="absolute top-4 right-4">
+    <a href="#" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-medium shadow-sm">
+      Admin Login
+    </a>
+  </div>
+
   <div class="bg-white rounded-xl shadow-md p-8 w-full max-w-md">
     <div class="flex flex-col items-center mb-6">
       <img src="{{ url_for('static', filename='Assests/Icons/download.png') }}" alt="Logo" class="h-12 mb-2" />
