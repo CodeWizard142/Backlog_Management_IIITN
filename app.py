@@ -33,7 +33,7 @@ with app.app_context():
 def Signup():
     return render_template('signup.html')
 
-@app.route('/signup', methods=['GET','POST'])
+@app.route('/signup', methods=['GET', 'POST'])
 def handle_signup():
     if request.method == 'POST':
         try:
@@ -90,15 +90,16 @@ def handle_signup():
             flash("Signup successful! Please log in.", "success")
             return redirect(url_for('login'))
 
-        except MySQLdb.IntegrityError as e:
+        except MySQLdb.IntegrityError:
             flash("Email or student ID already exists. Please use a different one.", "error")
             return redirect(url_for('Signup'))
-        except Exception as e:
+        except Exception:
             traceback.print_exc()
             flash("An unexpected error occurred during signup.", "error")
             return redirect(url_for('Signup'))
 
     return render_template('signup.html')
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -106,46 +107,38 @@ def login():
             email = request.form['email']
             password = request.form['password']
             
-            print(f"Login attempt for: {email}")
-            
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-            
-            # Check admin table (with plain password now)
+
+            # Admin check (plain text password)
             cursor.execute("SELECT * FROM admin WHERE email = %s", (email,))
             admin = cursor.fetchone()
-            print(f"Admin lookup result: {admin}")
-            
             if admin and admin['password'] == password:
-                print("Admin authentication successful")
                 session['admin_loggedin'] = True
                 session['admin_id'] = admin['admin_id']
                 session['admin_name'] = admin['name']
                 session['admin_role'] = admin['role']
                 return redirect(url_for('admin_dashboard'))
 
-            # Check student table (still using hashed password)
+            # Student check (hashed password)
             cursor.execute("SELECT * FROM students WHERE email = %s", (email,))
             user = cursor.fetchone()
-            print(f"Student lookup result: {user is not None}")
-            
             if user and check_password_hash(user['password_hash'], password):
-                print("Student authentication successful")
                 session['loggedin'] = True
                 session['id'] = user['student_id']
                 session['name'] = user['name']
                 session['email'] = user['email']
                 return redirect(url_for('dashboard'))
 
-            # If neither admin nor student credentials match
             flash("Invalid email or password.", "error")
             return render_template('login.html')
-        
-        except Exception as e:
+
+        except Exception:
             traceback.print_exc()
             flash("An unexpected error occurred during login.", "error")
             return render_template('login.html')
 
     return render_template('login.html')
+
 @app.route('/dashboard')
 def dashboard():
     if 'loggedin' in session:
@@ -156,7 +149,7 @@ def dashboard():
             student_details = cursor.fetchone()
             if student_details:
                 return render_template('dashboard.html', student_details=student_details)
-        except Exception as e:
+        except Exception:
             traceback.print_exc()
             flash("Error loading dashboard.", "error")
 
@@ -191,73 +184,63 @@ def get_backlogs():
         backlogs = cursor.fetchall()
         return jsonify(backlogs if backlogs else [])
 
-    except Exception as e:
+    except Exception:
         traceback.print_exc()
         return jsonify({'error': 'Could not retrieve backlogs'}), 500
+
 @app.route('/my-courses', methods=['GET'])
 def get_courses():
     try:
-        # Check if user is logged in
         student_id = session.get('id')
         if not student_id:
             return jsonify({'error': 'Not logged in'}), 401
 
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        
-        # Check if user exists and get their semester
         cursor.execute("SELECT semester, department FROM students WHERE student_id = %s", (student_id,))
         student = cursor.fetchone()
-        
+
         if not student:
             return jsonify({'error': 'Student not found'}), 404
-            
+
         semester = student['semester']
         department = student['department']
-        
-        # Debug - print user information
-        print(f"User semester: {semester}, department: {department}")
-        
-        # Check if courses exist in database for this semester
+
         cursor.execute("SELECT COUNT(*) as count FROM courses WHERE semester = %s", (semester,))
         count = cursor.fetchone()['count']
-        print(f"Found {count} courses for semester {semester}")
-        
-        # Get the courses for the student's semester
+
         cursor.execute("SELECT course_id, course_name FROM courses WHERE semester = %s", (semester,))
         courses_data = cursor.fetchall()
-        
-        # Debug - print raw data
-        print(f"Raw courses data: {courses_data}")
-        
-        # Format the courses data
+
         courses = [{'id': course['course_id'], 'name': course['course_name']} for course in courses_data]
-        
-        # Debug - print formatted data
-        print(f"Formatted courses: {courses}")
-        
+
         cursor.close()
         return jsonify({'courses': courses, 'debug': {'semester': semester, 'count': count}}), 200
-        
+
     except Exception as e:
         traceback.print_exc()
         return jsonify({'error': f'An error occurred while fetching courses: {str(e)}'}), 500
-    
+
 @app.route('/logout')
 def logout():
     try:
         session.clear()
         flash("You have been logged out.", "success")
         return redirect(url_for('login'))
-    except Exception as e:
+    except Exception:
         traceback.print_exc()
         flash("An error occurred during logout.", "error")
         return redirect(url_for('login'))
+
 @app.route('/admin-dashboard')
 def admin_dashboard():
     if 'admin_loggedin' in session:
-        return render_template('admin_dashboard.html', admin_name=session['admin_name'])
+        return render_template('admin_dashboard.html',
+                               admin_name=session['admin_name'],
+                               admin_role=session['admin_role'],
+                               admin_id=session['admin_id'])
     flash("Please login as admin first.")
-    return redirect(url_for('admin_login'))
+    return redirect(url_for('login'))
+
 @app.route('/admin/logout', methods=['POST'])
 def admin_logout():
     session.pop('admin_loggedin', None)
@@ -266,5 +249,9 @@ def admin_logout():
     session.pop('admin_role', None)
     flash("You have been logged out successfully.", "info")
     return redirect(url_for('login'))
+@app.route('/faculty-login')
+def faculty_login():
+    return "Faculty login page coming soon."
+
 if __name__ == '__main__':
     app.run(debug=True)
