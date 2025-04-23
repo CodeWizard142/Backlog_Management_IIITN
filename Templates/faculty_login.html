@@ -4,24 +4,24 @@
   <link rel="icon" href="{{ url_for('static', filename='Assests/Icons/download.png') }}" type="image/png">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Academic Backlog Tracking and Resolution Portal</title>
+  <title>Faculty Login | Academic Backlog Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen relative">
 
-  <!-- Admin login button in the top right corner -->
+  <!-- Link back to student login -->
   <div class="absolute top-4 right-4">
-    <a href="{{ url_for('faculty_login') }}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-medium shadow-sm">
-      Faculty Login
-    </a>    
+    <a href="{{ url_for('login') }}" class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 text-sm font-medium shadow-sm">
+      Student Login
+    </a>
   </div>
 
   <div class="bg-white rounded-xl shadow-md p-8 w-full max-w-md">
     <div class="flex flex-col items-center mb-6">
       <img src="{{ url_for('static', filename='Assests/Icons/download.png') }}" alt="Logo" class="h-12 mb-2" />
       <h1 class="text-center text-xl font-semibold leading-tight">
-        Indian Institute Of Information Technology 
-        Nagpur
+        Admin Login<br />
+        IIIT Nagpur
       </h1>
     </div>
 
@@ -29,10 +29,10 @@
       <p class="text-red-600 text-sm text-center mb-4">{{ error }}</p>
     {% endif %}
 
-    <form id="loginForm" class="space-y-5" method="POST" action="{{ url_for('login') }}">
+    <form id="adminLoginForm" class="space-y-5" method="POST" action="{{ url_for('admin_login') }}">
       <div>
-        <label for="email" class="block text-sm font-medium mb-1">Email</label>
-        <input id="email" type="email" name="email" placeholder="Enter your IIITN email"
+        <label for="email" class="block text-sm font-medium mb-1">Admin Email</label>
+        <input id="email" type="email" name="email" placeholder="Enter your admin email"
                class="w-full border border-gray-300 rounded px-3 py-2" required />
       </div>
 
@@ -54,10 +54,6 @@
               class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
         LOGIN
       </button>
-
-      <p class="text-center text-sm mt-2">
-        <a href="{{ url_for('handle_signup') }}" class="text-gray-600 hover:underline">First Time Login?</a>
-      </p>
     </form>
   </div>
 

@@ -99,35 +99,53 @@ def handle_signup():
             return redirect(url_for('Signup'))
 
     return render_template('signup.html')
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         try:
             email = request.form['email']
             password = request.form['password']
-
+            
+            print(f"Login attempt for: {email}")
+            
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+            
+            # Check admin table (with plain password now)
+            cursor.execute("SELECT * FROM admin WHERE email = %s", (email,))
+            admin = cursor.fetchone()
+            print(f"Admin lookup result: {admin}")
+            
+            if admin and admin['password'] == password:
+                print("Admin authentication successful")
+                session['admin_loggedin'] = True
+                session['admin_id'] = admin['admin_id']
+                session['admin_name'] = admin['name']
+                session['admin_role'] = admin['role']
+                return redirect(url_for('admin_dashboard'))
+
+            # Check student table (still using hashed password)
             cursor.execute("SELECT * FROM students WHERE email = %s", (email,))
             user = cursor.fetchone()
-
+            print(f"Student lookup result: {user is not None}")
+            
             if user and check_password_hash(user['password_hash'], password):
+                print("Student authentication successful")
                 session['loggedin'] = True
                 session['id'] = user['student_id']
                 session['name'] = user['name']
                 session['email'] = user['email']
                 return redirect(url_for('dashboard'))
 
+            # If neither admin nor student credentials match
             flash("Invalid email or password.", "error")
             return render_template('login.html')
-
+        
         except Exception as e:
             traceback.print_exc()
             flash("An unexpected error occurred during login.", "error")
             return render_template('login.html')
 
     return render_template('login.html')
-
 @app.route('/dashboard')
 def dashboard():
     if 'loggedin' in session:
@@ -234,6 +252,19 @@ def logout():
         traceback.print_exc()
         flash("An error occurred during logout.", "error")
         return redirect(url_for('login'))
-
+@app.route('/admin-dashboard')
+def admin_dashboard():
+    if 'admin_loggedin' in session:
+        return render_template('admin_dashboard.html', admin_name=session['admin_name'])
+    flash("Please login as admin first.")
+    return redirect(url_for('admin_login'))
+@app.route('/admin/logout', methods=['POST'])
+def admin_logout():
+    session.pop('admin_loggedin', None)
+    session.pop('admin_id', None)
+    session.pop('admin_name', None)
+    session.pop('admin_role', None)
+    flash("You have been logged out successfully.", "info")
+    return redirect(url_for('login'))
 if __name__ == '__main__':
     app.run(debug=True)
